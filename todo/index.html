@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>Todo PWA</title>
+  <meta name="description" content="Todo Progressive Web App">
+
+  <!-- Mobile -->
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
+
+  <!-- Chrome / Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="black">
+  <link rel="icon" href="icon.png">
+
+  <!-- Safari / iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png">
+
+  <!-- Web Components -->
+  <script>
+    var webComponentsSupported = ('registerElement' in document
+      && 'import' in document.createElement('link')
+      && 'content' in document.createElement('template'));
+  
+    if (!webComponentsSupported) {
+      var wcPoly = document.createElement('script');
+      wcPoly.src = './bower_components/webcomponentsjs/webcomponents-lite.js';
+      wcPoly.async = true;
+      document.head.appendChild(wcPoly);
+    }
+
+    window.Polymer = { dom: 'shadow' };
+  </script> 
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="import" href="./elements.html" async>
+
+  <style is="custom-style">
+    paper-input {
+      --paper-input-container-color: #FFFFFF;
+      --paper-input-container-focus-color: #1976D2;
+      --paper-input-container-input: {
+        color: #FFFFFF;
+      };
+    }
+  </style>
+</head>
+<body is='body-bind' id='app'>
+  <firebase-app auth-domain="todo-progressive-web-app.firebaseapp.com"
+    database-url="https://todo-progressive-web-app.firebaseio.com"
+    api-key="AIzaSyBmPpJ9qzqL-3ZaKJmiPNNZpV1clw4aBQs"
+    app='{{app}}'></firebase-app>
+  <firebase-auth user="{{user}}" provider="google" app='[[app]]'></firebase-auth>
+  <firebase-query
+    id='todos'
+    app='[[app]]'
+    path='/user/[[user.uid]]/todos'
+    data="{{todos}}"></firebase-query>
+  <app-toolbar class='header'>
+    <p title>Todos</p>
+  </app-toolbar>
+  <iron-list items='{{todos}}' as='todo'>
+    <template>
+      <div class='list-item' checked$='[[todo.done]]'>
+        <paper-checkbox checked='{{todo.done}}'>[[todo.text]]</paper-checkbox>
+        <paper-icon-button noink tabindex='-1' class='closeButton' icon="close" on-tap='removeTodo' data-todo-index$='[[index]]'></paper-icon-button>
+      </div>
+    </template>
+  </iron-list>
+  <div class='new-item'>
+    <paper-input id='todoInput' label="New Todo..." minlength='1'>
+      <paper-icon-button id='addButton' suffix icon="check"></paper-icon-button>
+    </paper-input>
+  </div>
+  <script src="jspm_packages/system.js"></script>
+  <script src="config.js"></script>
+  <script>
+    System.import('lib/main.js');
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+}
+
+app-toolbar:unresolved.header {
+  height: 64px;
+  padding: 0 16px;
+}
+
+app-toolbar.header, app-toolbar.header:unresolved {
+  background-color: #1976D2;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+  font-weight: bold;
+  color: white;
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.list-item {
+  padding: 15px 10px;
+  border-bottom: 2px solid #e0e0e0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.closeButton {
+  color: #b0b0b0;
+  min-width: 40px;
+  margin-left: 5px;
+}
+
+iron-list {
+  padding-top: 64px;
+  padding-bottom: 60px;
+}
+
+.new-item {
+  position: fixed;
+  bottom:0;
+  padding: 0 10px;
+  width: 100%;
+  background-color: #424242;
+}
+
+#addButton {
+  color: #FFFFFF;
+  padding: 0px;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 2px;
+  box-sizing: border-box;
+}
