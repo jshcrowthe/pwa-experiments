@@ -1,0 +1,181 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<dom-module id="todo-listing">
+  <template>
+    <style>
+      *[hidden] {
+        display: none !important;
+      }
+      * {
+        box-sizing: border-box; 
+      }
+      :host {
+        display: block;
+        height: 100%;
+        position: relative;
+        width: 100%;
+        --primary-color: #1976D2;
+        --secondary-color: #FFFFFF;
+      }
+      .list-item {
+        padding: 15px 10px;
+        border-bottom: 2px solid #e0e0e0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .closeButton {
+        color: #b0b0b0;
+        min-width: 40px;
+        margin-left: 5px;
+      }
+
+      iron-list {
+        padding-top: 64px;
+        padding-bottom: 70px;
+      }
+
+      .new-item {
+        position: fixed;
+        bottom:0;
+        padding: 0 10px;
+        width: 100%;
+        background-color: #424242;
+      }
+
+      .addButton {
+        color: #FFFFFF;
+        padding: 0px;
+        width: 22px;
+        height: 22px;
+        margin-bottom: 2px;
+        box-sizing: border-box;
+      }
+      app-toolbar.header {
+        background-color: var(--primary-color);
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+        font-weight: bold;
+        color: white;
+        z-index: 1;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+      }
+
+      paper-input {
+        padding: 5px 0;
+        --paper-input-container-color: var(--secondary-color);
+        --paper-input-container-focus-color: var(--primary-color);
+        --paper-input-container-input: {
+          color: var(--secondary-color);
+        };
+      }
+
+      paper-button {
+        font-size: 14px;
+      }
+      
+      .empty-list-filler {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: -1;
+        color:#8A8A8A;
+      }
+
+    </style>
+    <firebase-query
+      id='todos'
+      app-name='[[appName]]'
+      path='/user/[[userId]]/todos'
+      data="{{todos}}"></firebase-query>
+    <app-toolbar class='header'>
+      <p title>To Dos</p>
+      <paper-button on-tap='_signOut'>Sign Out</paper-button>
+    </app-toolbar>
+    <div class='empty-list-filler' hidden$='[[_toBool(todos.length)]]'>
+      <p>Add some to dos using the input field below!</p>
+    </div>
+    <iron-list items='{{todos}}' as='todo' hidden$='[[!_toBool(todos.length)]]'>
+      <template>
+        <div class='list-item' checked$='[[todo.done]]'>
+          <paper-checkbox checked='{{todo.done}}'>[[todo.text]]</paper-checkbox>
+          <paper-icon-button noink tabindex='-1' class='closeButton' icon="close" on-tap='_removeTodo' data-todo-index$='[[index]]'></paper-icon-button>
+        </div>
+      </template>
+    </iron-list>
+    <div class='new-item'>
+      <paper-input id='input' label="New To Do..." minlength='1' on-keyup='_handleKeyup'>
+        <paper-icon-button class='addButton' suffix icon="check" on-tap='_trySubmit'></paper-icon-button>
+      </paper-input>
+    </div>
+  </template>
+  <script>
+  (function() {
+    class Todo {
+      constructor(text) {
+        this.text = text;
+        this.done = false;
+        this.timestamp = new Date().getTime();
+      }
+    };
+    Polymer({
+      is: 'todo-listing',
+      properties: {
+        appName: {
+          type: String
+        },
+        userId: {
+          type: String
+        }
+      },
+      _toBool: function(val) {
+        return !!val;
+      },
+      _handleKeyup: function(e) {
+        if (e.keyCode !== 13) return;
+        this._trySubmit();
+      },
+      _trySubmit: function() {
+        var val = this.$.input.value;
+        if (!val) {
+          this.$.input.invalid = true;
+        } else {
+          this.$.input.invalid = false;
+          this.$.input.value = '';
+          this.$.todos.ref.push(new Todo(val));
+        }
+      },
+      _removeTodo: function(e) {
+        var index = (function(target){
+          var rawIndex = parseInt(target.getAttribute('data-todo-index'));
+          if (isNaN(rawIndex)) return -1;
+          return rawIndex;
+        })(Polymer.dom(e).localTarget);
+
+        if (~index) {
+          this.$.todos.ref.child(this.$.todos.data[index].$key).remove();
+        }
+      },
+      _signOut: function() {
+        this.fire('sign-out');
+      }
+    });
+  })()
+  </script>
+</dom-module>

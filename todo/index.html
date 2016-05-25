@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script>
+    var host = "jshcrowthe.github.io";
+    if ((host == window.location.host) && (window.location.protocol != "https:")) window.location.protocol = "https";
+  </script>
   <meta charset="utf-8">
 
-  <title>Todo PWA</title>
+  <title>To Do App</title>
   <meta name="description" content="Todo Progressive Web App">
 
   <!-- Mobile -->
@@ -19,6 +23,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png">
 
+  <link rel="manifest" href="./manifest.json">
+  <link rel="shortcut icon" type="image/png" href="images/icons/icon-72x72.png">
+
   <!-- Web Components -->
   <script>
     var webComponentsSupported = ('registerElement' in document
@@ -32,54 +39,48 @@
       document.head.appendChild(wcPoly);
     }
 
-    window.Polymer = { dom: 'shadow' };
+    window.Polymer = { dom: 'shadow', lazyRegister: true };
   </script> 
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="styles.css">
   <link rel="import" href="./elements.html" async>
 
-  <style is="custom-style">
-    paper-input {
-      --paper-input-container-color: #FFFFFF;
-      --paper-input-container-focus-color: #1976D2;
-      --paper-input-container-input: {
-        color: #FFFFFF;
-      };
-    }
-  </style>
 </head>
-<body is='body-bind' id='app'>
-  <firebase-app auth-domain="todo-progressive-web-app.firebaseapp.com"
-    database-url="https://todo-progressive-web-app.firebaseio.com"
-    api-key="AIzaSyBmPpJ9qzqL-3ZaKJmiPNNZpV1clw4aBQs"
-    app='{{app}}'></firebase-app>
-  <firebase-auth user="{{user}}" provider="google" app='[[app]]'></firebase-auth>
-  <firebase-query
-    id='todos'
-    app='[[app]]'
-    path='/user/[[user.uid]]/todos'
-    data="{{todos}}"></firebase-query>
-  <app-toolbar class='header'>
-    <p title>Todos</p>
-  </app-toolbar>
-  <iron-list items='{{todos}}' as='todo'>
-    <template>
-      <div class='list-item' checked$='[[todo.done]]'>
-        <paper-checkbox checked='{{todo.done}}'>[[todo.text]]</paper-checkbox>
-        <paper-icon-button noink tabindex='-1' class='closeButton' icon="close" on-tap='removeTodo' data-todo-index$='[[index]]'></paper-icon-button>
-      </div>
-    </template>
-  </iron-list>
-  <div class='new-item'>
-    <paper-input id='todoInput' label="New Todo..." minlength='1'>
-      <paper-icon-button id='addButton' suffix icon="check"></paper-icon-button>
-    </paper-input>
+<body>
+  <!-- Sign In Container -->
+  <div id='signIn' class="signIn">
+    <h1>To Do App</h1>
+    <paper-button id='signInButton' raised>Sign In</paper-button>
+    <svg id='spinner' class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+      <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+    </svg>
   </div>
-  <script src="jspm_packages/system.js"></script>
-  <script src="config.js"></script>
-  <script>
-    System.import('lib/main.js');
-  </script>
+  <!-- Polymer Data Binding Layer -->
+  <template is='dom-bind' id='app'>
+    <!-- Parent Firebase App -->
+    <firebase-app auth-domain="todo-progressive-web-app.firebaseapp.com"
+      database-url="https://todo-progressive-web-app.firebaseio.com"
+      api-key="AIzaSyBmPpJ9qzqL-3ZaKJmiPNNZpV1clw4aBQs"
+      name='firebase-todo'
+      on-app-changed='_firebaseConnectHandler'></firebase-app>
+    <!-- Primary Auth Provider -->
+    <firebase-auth user="{{user}}" on-user-changed='_updateSignInDisplayStatus' provider="google" app-name='firebase-todo'></firebase-auth>
+    <!-- Runtime Error Logging -->
+    <firebase-query
+      id='errors'
+      app-name='firebase-todo'
+      path='/runtime_errors'></firebase-query>
+    <!-- Todo Listing if user is authenticated -->
+    <template is='dom-if' if='[[user]]' restamp>
+      <todo-listing user-id='[[user.uid]]' app-name='firebase-todo'></todo-listing>
+    </template>
+  </template>
+  <!-- A toast notification for handling service worker updates -->
+  <paper-toast id="toast" text="A newer version of this app is available, to update" duration='5000'>
+    <a href="javascript:window.location.reload();">click here</a>
+  </paper-toast>
+  <!-- Required javascript -->
+  <script src='js/main.js'></script>
 </body>
 </html>

@@ -1,12 +1,18 @@
 {
-  "jspm": {
-    "dependencies": {
-      "rxjs": "npm:rxjs@^5.0.0-beta.8"
-    },
-    "devDependencies": {
-      "babel": "npm:babel-core@^5.8.24",
-      "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "core-js": "npm:core-js@^1.1.4"
-    }
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "Todo as a PWA",
+  "main": "index.html",
+  "scripts": {
+    "install": "bower install",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "bower install && sw-precache --root=. --static-file-globs='./**/*.@(js|html|css)'"
+  },
+  "author": "Josh Crowther <jshcrowthe@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "bower": "^1.7.9",
+    "gulp": "^3.9.1",
+    "sw-precache": "^3.2.0"
   }
 }
