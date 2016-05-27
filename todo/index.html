@@ -66,6 +66,12 @@
       on-app-changed='_firebaseConnectHandler'></firebase-app>
     <!-- Primary Auth Provider -->
     <firebase-auth user="{{user}}" on-user-changed='_updateSignInDisplayStatus' provider="google" app-name='firebase-todo'></firebase-auth>
+    <app-localstorage-document
+      session='[[user.uid]]'
+      key="user"
+      data="{{user}}"
+      session-only>
+    </app-localstorage-document>
     <!-- Runtime Error Logging -->
     <firebase-query
       id='errors'

@@ -25,7 +25,8 @@
     document.querySelector('firebase-auth').signOut();
   });
   window.onerror = function(err) {
-    if (err) document.querySelector('#errors').ref.push(err);
+    var reporter = document.querySelector('#errors');
+    if (err && reporter && reporter.ref && reporter.ref.push) reporter.ref.push(err);
   };
 
   if ('serviceWorker' in navigator) {

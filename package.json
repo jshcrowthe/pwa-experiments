@@ -1,0 +1,27 @@
+{
+  "name": "pwa-experiments",
+  "version": "1.0.0",
+  "description": "Progressive Web App Experiments",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jshcrowthe/pwa-experiments.git"
+  },
+  "keywords": [
+    "pwa"
+  ],
+  "author": "Josh Crowther <jshcrowthe@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jshcrowthe/pwa-experiments/issues"
+  },
+  "homepage": "https://github.com/jshcrowthe/pwa-experiments#readme",
+  "devDependencies": {
+    "browser-sync": "^2.12.8",
+    "gulp": "^3.9.1",
+    "sw-precache": "^3.2.0"
+  }
+}
